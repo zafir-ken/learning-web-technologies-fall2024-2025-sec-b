@@ -43,4 +43,25 @@ function login($user_id, $password){
     }
 } 
 
+function post($user_id, $status) {
+    $conn = getConnection();
+
+    // Use prepared statements to avoid SQL injection and properly handle values
+    $stmt = $conn->prepare("INSERT INTO status (user_id, status) VALUES (?, ?)");
+    
+    // Bind the parameters ('s' means string for both user_id and status)
+    $stmt->bind_param("ss", $user_id, $status);  // "ss" means both are strings
+
+    // Execute the query
+    if ($stmt->execute()) {
+        echo "Status posted successfully!";
+    } else {
+        echo "Error posting status: " . $stmt->error;
+    }
+
+    $stmt->close();
+    mysqli_close($conn);
+}
+
+
 ?>
