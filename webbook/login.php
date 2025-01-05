@@ -13,6 +13,7 @@ if(isset($_POST['login']))
     $status=login($user_id,$password);
     if($status)
     {
+        setcookie("user_id", $user_id, time() + (3600), "/");
         header("location: profile.php");
     }
     else
