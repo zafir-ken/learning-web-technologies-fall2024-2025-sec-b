@@ -8,12 +8,12 @@ if(isset($_POST['signup']))
 }
 if(isset($_POST['login']))
 {
-    $user_id=$_POST['user_id'];
-    $password=$_POST['password'];
-    $status=login($user_id,$password);
+    $email=trim($_POST['email']);
+    $password=trim($_POST['password']);
+    $status=login($email,$password);
     if($status)
     {
-        setcookie("user_id", $user_id, time() + (3600), "/");
+        setcookie("email", $email, time() + (3600), "/");
         header("location: profile.php");
     }
     else
@@ -117,7 +117,7 @@ if(isset($_POST['login']))
         <div class="login-box">
             <h2>Login To My WebBook</h2>
             <form method="POST">
-                <input type="text" name="user_id" placeholder="User Id" required>
+                <input type="text" name="email" placeholder="email" required>
                 <input type="password" name="password" placeholder="Password" required>
                 <button type="submit" name="login" class="login-btn">Login</button>
             </form>
