@@ -226,7 +226,7 @@ if(isset($_POST['post']))
     </div>
         
     <div class="nav-bar">
-        <a href="#timeline">Timeline</a>
+        <a href="timeline.php">Timeline</a>
         <a href="about.php">About</a>
         <a href="#friends">Friends</a>
         <a href="#photos">Photos</a>
@@ -255,15 +255,28 @@ if(isset($_POST['post']))
             </div>
 
             <?php
+            if(!empty($arr) && count($arr)>0)
+            {
                 $n=count($arr);
                 for($i=$n-1;$i>=0;$i--)
                 {
-                    echo '<div class="post">';
-                    echo "<h2>$name </h2>";
-                    echo "<p>". $arr[$i][1] ."</p>";
-                    echo '<div class="timestamp">Posted on ' . $arr[$i][2] . '</div>';
-                    echo '</div>';
+                    if (isset($arr[$i][1], $arr[$i][2])) {
+                        echo '<div class="post">';
+                        echo "<h2>$name</h2>";
+                        echo "<p>" . $arr[$i][1] . "</p>";
+                        echo '<div class="timestamp">Posted on ' . $arr[$i][2] . '</div>';
+                        echo '
+                            <form action="" method="POST" style="display: inline;">
+                                <button name="edit">Edit</button>
+                            </form>
+                            <form action="" method="POST" style="display: inline;">
+                                <button name="delete">Delete</button>
+                            </form>';
+                        echo '</div>';
+                        
+                    }
                 }
+            }
             ?>
 
             
