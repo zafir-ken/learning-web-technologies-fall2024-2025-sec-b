@@ -189,16 +189,17 @@ function show_status($user_id)
     }
     $sql = "SELECT id, status,time FROM statuses WHERE user_id = $user_id";
     $result = $conn->query($sql);
-    
+    $arr=[];
     while ($row = $result->fetch_assoc()) 
     {
         $arr[]= array($row['id'], $row['status'],$row['time']);
     }
-    usort($arr, function ($a, $b) { return $a[0] - $b[0];  });
-    return $arr;
-
-
-
+    if(count($arr)>0)
+    {
+        usort($arr, function ($a, $b) { return $a[0] - $b[0];  });
+        return $arr;
+    }
+    
 
 }
 
