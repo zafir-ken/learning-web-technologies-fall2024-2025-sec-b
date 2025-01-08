@@ -9,34 +9,41 @@ if(isset($_POST['submit']))
 {
     $first_name=trim($_POST['first_name']);
     $last_name=trim($_POST['last_name']);
-    $user_id = trim($_POST['user_id']);
     $gender = trim($_POST['gender']);
     $email = trim($_POST['email']);
     $password = trim($_POST['password']);
     $confirm_password=trim($_POST['confirm_password']);
 
-    if (empty($first_name) || empty($last_name) || empty($user_id) || empty($gender) || empty($email) || empty($password) || empty($confirm_password)) 
+    if ($password !== $confirm_password) 
     {
-        echo "All fields are required.";
-    } 
+        echo "Passwords do not match.";
+    }
     else 
     {
-        if ($password !== $confirm_password) 
+      $user_id=rand(1,100000000);
+      while(!isunique($user_id))
+      {
+         $user_id=rand(1,100000000);
+      }
+
+      if(!isunique_email($email))
+      {
+          echo "This Email is already registered";
+      }
+      else
+      {
+        $status = addUser($first_name, $last_name, $user_id, $gender, $email, $password);
+        if($status)
         {
-            echo "Passwords do not match.";
+            header('location: login.php');
         }
         else 
         {
-            $status = addUser($first_name, $last_name, $user_id, $gender, $email, $password);
-            if($status)
-            {
-                header('location: login.php');
-            }
-            else 
-            {
-               header('location: signup.php');
-            }
+           header('location: signup.php');
         }
+      }
+
+       
     }
 
     
@@ -143,12 +150,15 @@ if(isset($_POST['submit']))
     .signup-btn:hover {
       background: linear-gradient(to right, green, cyan);
     }
+    a {
+    text-decoration: none;
+  }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>WebBook</h1>
+      <h1><a href="login.php">WebBook</a></h1>
       <form action="" method="POST">
        <button name="login" class="login-btn">Login</button>
       </form>
@@ -159,7 +169,7 @@ if(isset($_POST['submit']))
       <form action="" method="POST">
         <input type="text" name="first_name" placeholder="First Name" required>
         <input type="text" name="last_name" placeholder="Last Name" required>
-        <input type="text" name="user_id" placeholder="User ID" required>
+        
         <label for="gender">Gender:</label>
         <select name="gender" id="gender" required>
           <option value="male">Male</option>
