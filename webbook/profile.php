@@ -1,13 +1,25 @@
 <?php
 session_start();
 require_once('usermodel.php');
+$email = $_COOKIE['email'];
+$first=get_first_name($email);
+$last=get_last_name($email);
+$name=$first ." ".$last;
+$user_id=get_user_id($email);
+
+$arr=show_status($user_id);
+
 if(isset($_POST['post']))
 {
-    $user_id = $_COOKIE['user_id'];
+    
+    
     $status=$_POST['status'];
-    post($user_id,$status);
+    post_status($user_id,$status);
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit();
 
 }
+
 
 
 ?>
@@ -210,12 +222,12 @@ if(isset($_POST['post']))
     <div class="profile-header">
         <div class="cover-photo"></div>
         <img src="https://via.placeholder.com/120" alt="Profile Picture" class="profile-picture">
-        <h1>John Doe</h1>
+        <h1><?php echo "$name" ?></h1>
     </div>
         
     <div class="nav-bar">
         <a href="#timeline">Timeline</a>
-        <a href="#about">About</a>
+        <a href="about.php">About</a>
         <a href="#friends">Friends</a>
         <a href="#photos">Photos</a>
         <a href="#settings">Settings</a>
@@ -242,16 +254,19 @@ if(isset($_POST['post']))
                 </form>
             </div>
 
-            <div class="post">
-                <h2>Post Title 1</h2>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse commodo ligula id volutpat feugiat.</p>
-                <div class="timestamp">Posted on January 1, 2025</div>
-            </div>
-            <div class="post">
-                <h2>Post Title 2</h2>
-                <p>Quisque ultricies velit in varius vehicula. Curabitur ac libero nec nunc egestas facilisis.</p>
-                <div class="timestamp">Posted on December 31, 2024</div>
-            </div>
+            <?php
+                $n=count($arr);
+                for($i=$n-1;$i>=0;$i--)
+                {
+                    echo '<div class="post">';
+                    echo "<h2>$name </h2>";
+                    echo "<p>". $arr[$i][1] ."</p>";
+                    echo '<div class="timestamp">Posted on ' . $arr[$i][2] . '</div>';
+                    echo '</div>';
+                }
+            ?>
+
+            
 
         </div>
     </div>
