@@ -19,7 +19,16 @@ if(isset($_POST['post']))
     exit();
 
 }
+if(isset($_POST['delete']))
+{
+    $post_id=$_POST['post_id'];
+     delete_status($post_id);
+     header("Location: " . $_SERVER['PHP_SELF']);
+    exit();
 
+}
+
+$arr=show_friends($user_id);
 
 
 ?>
@@ -228,9 +237,9 @@ if(isset($_POST['post']))
     <div class="nav-bar">
         <a href="timeline.php">Timeline</a>
         <a href="about.php">About</a>
-        <a href="#friends">Friends</a>
+        <a href="friends.php">Friends</a>
         <a href="#photos">Photos</a>
-        <a href="#settings">Settings</a>
+        <a href="settings.php">Settings</a>
         <a href="logout.php" class="logout-button">Logout</a>
     </div>
 
@@ -238,11 +247,28 @@ if(isset($_POST['post']))
         <div class="left-sidebar">
             <h2>Friends</h2>
             <ul>
-                <li><a href="#">Friend 1</a></li>
-                <li><a href="#">Friend 2</a></li>
-                <li><a href="#">Friend 3</a></li>
-                <li><a href="#">Friend 4</a></li>
-               
+            <?php
+                if(!empty($arr))
+                {
+                    
+                    for($i=0;$i<count($arr);$i++)
+                    {
+                        if($user_id!=$arr[$i][0])
+                        {
+                            echo '<li>';
+                            echo '<div class="friend-info">' . $arr[$i][1] . ' ' . $arr[$i][2] . '</div>';
+                            echo '<form action="" method="POST" style="display:inline;">
+                                    <input type="hidden" name="friend_user_id" value="' . $arr[$i][0] . '">
+                                    <button type="submit" name="friend_request" class="friend-request-btn">View Profile</button>
+                                </form>';
+                            echo '</li>';
+                        }
+                            
+                        }
+                    
+                    
+                }
+                ?>
             </ul>
         </div>
 
@@ -270,6 +296,7 @@ if(isset($_POST['post']))
                                 <button name="edit">Edit</button>
                             </form>
                             <form action="" method="POST" style="display: inline;">
+                                
                                 <button name="delete">Delete</button>
                             </form>';
                         echo '</div>';
@@ -279,9 +306,9 @@ if(isset($_POST['post']))
             }
             ?>
 
-            
-
         </div>
     </div>
+            
+
 </body>
 </html>
