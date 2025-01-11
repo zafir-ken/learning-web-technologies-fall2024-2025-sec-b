@@ -17,6 +17,11 @@ if(isset($_POST['post']))
     exit();
 
 }
+if(isset($_POST['delete']))
+{
+    
+}
+
 ?>
 
 
