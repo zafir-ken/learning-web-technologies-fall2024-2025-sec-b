@@ -199,13 +199,300 @@ function show_status($user_id)
         usort($arr, function ($a, $b) { return $a[0] - $b[0];  });
         return $arr;
     }
-    
+
 
 }
 
+function delete_status($post_id)//incomplete
+{
+    $conn=getConnection();
+    if(!$conn)
+    {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+    $sql = "DELETE FROM statuses WHERE id = $post_id";
+    if (mysqli_query($conn, $sql)) {
+        echo "Post deleted successfully.";
+    } else {
+        echo "Error deleting post: " . mysqli_error($conn);
+    }
+
+    mysqli_close($conn);
+}
+
+function show_all_user($user_id)
+{
+    $conn=getConnection();
+    if(!$conn)
+    {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+    $sql = "SELECT user_id, first_name,last_name FROM user_info WHERE user_id != $user_id";
+    $result = $conn->query($sql);
+    $arr=[];
+    while ($row = $result->fetch_assoc()) 
+    {
+        $arr[]= array($row['user_id'], $row['first_name'],$row['last_name']);
+    }
+    if(count($arr)>0)
+    {
+        return $arr;
+    }
+}
+
+function friend_request($user_id,$user_id_of_friend)
+ {
+    
+    $conn=getConnection();
+    if(!$conn)
+    {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+
+    $x=1;
+        $sql = "INSERT INTO friends (user_id, friend_user_id,request) 
+                VALUES ('$user_id', '$user_id_of_friend', $x )";
+        
+        if (mysqli_query($conn, $sql)) {
+            return true;
+        } else {
+            return false;
+        }
+    
+
+    mysqli_close($conn);
+}
+
+function already_sent_friend_request($user_id)
+{
+    $conn=getConnection();
+    if(!$conn)
+    {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+    $sql = "SELECT  friend_user_id FROM friends WHERE user_id = $user_id OR friend_user_id = $user_id";
+    $result = $conn->query($sql);
+    $arr=[];
+    while ($row = $result->fetch_assoc()) 
+    {
+        $arr[]= $row['friend_user_id'];
+    }
+    if(count($arr)>0)
+    {
+        return $arr;
+    }
+
+}
+function get_friend_request($user_id)
+ {
+    $conn=getConnection();
+    if(!$conn)
+    {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+    $sql = "SELECT 
+            f.user_id, 
+            ui.first_name, 
+            ui.last_name 
+        FROM 
+            friends f
+        JOIN 
+            user_info ui ON f.user_id = ui.user_id
+        WHERE 
+            f.friend_user_id = $user_id 
+            AND f.accepted = 0 
+            AND f.rejected = 0
+        UNION 
+        SELECT 
+            f.friend_user_id AS user_id, 
+            ui.first_name, 
+            ui.last_name 
+        FROM 
+            friends f
+        JOIN 
+            user_info ui ON f.friend_user_id = ui.user_id
+        WHERE 
+            f.user_id = $user_id
+            AND f.accepted = 0 
+            AND f.rejected = 0";
 
 
 
+    $result = $conn->query($sql);
+    $arr=[];
+    while ($row = $result->fetch_assoc()) 
+    {
+        $arr[]= array($row['user_id'], $row['first_name'],$row['last_name']);
+    }
+    if(count($arr)>0)
+    {
+        return $arr;
+    }
+
+ }
+
+ function update_accepted($user_id,$user_id_of_friend)
+ {
+    $conn=getConnection();
+    if(!$conn)
+    {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+
+        $sql = "UPDATE friends 
+        SET accepted = 1, request = 0 
+        WHERE (user_id = $user_id_of_friend AND friend_user_id = $user_id) ";
+        
+        if (mysqli_query($conn, $sql)) {
+            return true;
+        } else {
+            return false;
+        }
+    
+
+    mysqli_close($conn);
+ }
+
+ function update_rejected($user_id,$user_id_of_friend)
+ {
+    $conn=getConnection();
+    if(!$conn)
+    {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+
+        $sql = "UPDATE friends 
+        SET rejected = 1, request = 0 
+        WHERE (user_id = $user_id_of_friend AND friend_user_id = $user_id) ";
+        
+        if (mysqli_query($conn, $sql)) {
+            return true;
+        } else {
+            return false;
+        }
+    
+
+    mysqli_close($conn);  
+ }
+
+ function show_friends($user_id)
+ {
+    $conn=getConnection();
+    if(!$conn)
+    {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+    $sql = "SELECT 
+            f.user_id, 
+            ui.first_name, 
+            ui.last_name 
+        FROM 
+            friends f
+        JOIN 
+            user_info ui ON f.user_id = ui.user_id
+        WHERE 
+            (f.user_id = $user_id OR f.friend_user_id = $user_id) 
+            AND f.accepted = 1";
+    
+    $result = $conn->query($sql);
+    $arr=[];
+    while ($row = $result->fetch_assoc()) 
+    {
+        $arr[]= array($row['user_id'], $row['first_name'],$row['last_name']);
+    }
+    if(count($arr)>0)
+    {
+        return $arr;
+    }
+    
+
+
+ }
+
+ function cur_password($user_id)
+ {
+    $conn=getConnection();
+    if(!$conn)
+    {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+    $sql="SELECT password FROM user_info WHERE user_id = $user_id";
+    $result = $conn->query($sql);
+    if ($result && $result->num_rows > 0) 
+    {
+        $row = $result->fetch_assoc();
+        return $row['password'];
+    }
+
+    
+ }
+
+ function change_password($user_id,$new_password)
+ {
+    $conn=getConnection();
+    if(!$conn)
+    {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+    $sql="UPDATE user_info SET password = $new_password  WHERE user_id = $user_id";
+    if (mysqli_query($conn, $sql)) {
+        return true;
+    } else {
+        return false;
+    }
+ }
+ function change_first_name($user_id,$first_name)
+ {
+    $conn=getConnection();
+    if(!$conn)
+    {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+    $sql="UPDATE user_info SET first_name = '$first_name' WHERE user_id = $user_id";
+    if (mysqli_query($conn, $sql)) {
+        mysqli_close($conn);
+        return true;
+    } else {
+        mysqli_close($conn);
+        return false;
+    }
+ }
+
+ function change_last_name($user_id,$last_name)
+ {
+    $conn=getConnection();
+    if(!$conn)
+    {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+    $sql="UPDATE user_info SET last_name = '$last_name' WHERE user_id = $user_id";
+    if (mysqli_query($conn, $sql)) {
+        mysqli_close($conn);
+        return true;
+    } else {
+        mysqli_close($conn);
+        return false;
+    }
+ }
+
+ function change_email($user_id,$email)
+ {
+    $conn=getConnection();
+    if(!$conn)
+    {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+    $sql="UPDATE user_info SET email = '$email' WHERE user_id = $user_id";
+    if (mysqli_query($conn, $sql)) {
+        mysqli_close($conn);
+        
+        return true;
+
+    } else {
+        mysqli_close($conn);
+        return false;
+    }
+ }
 
 
 ?>
