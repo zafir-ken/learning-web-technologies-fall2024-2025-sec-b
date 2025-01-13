@@ -19,7 +19,10 @@ if(isset($_POST['post']))
 }
 if(isset($_POST['delete']))
 {
-    
+    var_dump($_POST['id']);
+    delete_status($_POST['id']);
+    header("Location: " . $_SERVER['PHP_SELF']);
+
 }
 $arr1=show_friends($user_id);//friends array holds user_id name
 $arr1=unique_arr($arr1);
@@ -246,20 +249,26 @@ $arr1=unique_arr($arr1);
                 for ($i = $n - 1; $i >= 0; $i--) {
 
                         echo '<div class="post">';
-                        $user_id=$friend_status[$i][1];
-                        $first=first_name_($user_id);
-                        $last=last_name_($user_id);
+                        $user_id_kar=$friend_status[$i][1];
+                        $first=first_name_($user_id_kar);
+                        $last=last_name_($user_id_kar);
                         $name=$first ." ".$last;
                         echo "<h2>$name</h2>";
                         echo "<p>" . $friend_status[$i][2] . "</p>";
                         echo '<div class="timestamp">Posted on ' . $friend_status[$i][3] . '</div>';
+                       if($user_id_kar==$user_id)
+                       {
                         echo '
                             <form action="" method="POST" style="display: inline;">
+                                 <input type="hidden" name="id" value="' . $friend_status[$i][0] . '">
                                 <button name="edit">Edit</button>
                             </form>
                             <form action="" method="POST" style="display: inline;">
+                            <input type="hidden" name="id" value="' . $friend_status[$i][0] . '">
                                 <button name="delete">Delete</button>
                             </form>';
+                       }
+                        
                         echo '</div>';
                     }
             
