@@ -14,9 +14,12 @@ if(isset($_POST['post']))
     
     
     $status=$_POST['status'];
+    if(!empty($status))
+    {
     post_status($user_id,$status);
     header("Location: " . $_SERVER['PHP_SELF']);
     exit();
+    }
 
 }
 if(isset($_POST['delete']))
@@ -28,7 +31,8 @@ if(isset($_POST['delete']))
 
 }
 
-$arr=show_friends($user_id);
+$arr1=show_friends($user_id);
+$arr1=unique_arr($arr1);
 
 
 ?>
@@ -248,17 +252,17 @@ $arr=show_friends($user_id);
             <h2>Friends</h2>
             <ul>
             <?php
-                if(!empty($arr))
+                if(!empty($arr1))
                 {
                     
-                    for($i=0;$i<count($arr);$i++)
+                    for($i=0;$i<count($arr1);$i++)
                     {
-                        if($user_id!=$arr[$i][0])
+                        if($user_id!=$arr1[$i][0])
                         {
                             echo '<li>';
-                            echo '<div class="friend-info">' . $arr[$i][1] . ' ' . $arr[$i][2] . '</div>';
+                            echo '<div class="friend-info">' . $arr1[$i][1] . ' ' . $arr1[$i][2] . '</div>';
                             echo '<form action="" method="POST" style="display:inline;">
-                                    <input type="hidden" name="friend_user_id" value="' . $arr[$i][0] . '">
+                                    <input type="hidden" name="friend_user_id" value="' . $arr1[$i][0] . '">
                                     <button type="submit" name="friend_request" class="friend-request-btn">View Profile</button>
                                 </form>';
                             echo '</li>';
