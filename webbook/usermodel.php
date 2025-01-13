@@ -165,9 +165,8 @@ function post_status($user_id,$status)
     {
         die("Connection failed: " . mysqli_connect_error());
     }
-
-   
-        $sql = "INSERT INTO statuses (user_id, status, time) 
+    
+         $sql = "INSERT INTO statuses (user_id, status, time) 
                 VALUES ('$user_id', '$status', NOW())";
         
         if (mysqli_query($conn, $sql)) {
@@ -177,7 +176,9 @@ function post_status($user_id,$status)
         }
     
 
-    mysqli_close($conn);
+        mysqli_close($conn);
+   
+       
 }
 
 function show_status($user_id)
@@ -270,7 +271,7 @@ function already_sent_friend_request($user_id)
     {
         die("Connection failed: " . mysqli_connect_error());
     }
-    $sql = "SELECT  friend_user_id FROM friends WHERE user_id = $user_id OR friend_user_id = $user_id";
+    $sql = "SELECT friend_user_id FROM friends WHERE user_id = $user_id ";
     $result = $conn->query($sql);
     $arr=[];
     while ($row = $result->fetch_assoc()) 
@@ -299,22 +300,7 @@ function get_friend_request($user_id)
         JOIN 
             user_info ui ON f.user_id = ui.user_id
         WHERE 
-            f.friend_user_id = $user_id 
-            AND f.accepted = 0 
-            AND f.rejected = 0
-        UNION 
-        SELECT 
-            f.friend_user_id AS user_id, 
-            ui.first_name, 
-            ui.last_name 
-        FROM 
-            friends f
-        JOIN 
-            user_info ui ON f.friend_user_id = ui.user_id
-        WHERE 
-            f.user_id = $user_id
-            AND f.accepted = 0 
-            AND f.rejected = 0";
+            f.friend_user_id = $user_id ";
 
 
 
@@ -330,6 +316,21 @@ function get_friend_request($user_id)
     }
 
  }
+ 
+ function unique_arr($arr)
+  {
+    $unique_arr = [];
+    $seen = [];
+
+    foreach ($arr as $item) {
+        if (!in_array($item[0], $seen)) {
+            $seen[] = $item[0];  
+            $unique_arr[] = $item; 
+        }
+    }
+
+    return $unique_arr;
+}
 
  function update_accepted($user_id,$user_id_of_friend)
  {
