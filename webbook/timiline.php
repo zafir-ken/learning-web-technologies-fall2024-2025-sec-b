@@ -21,8 +21,25 @@ if(isset($_POST['delete']))
 {
     
 }
-$arr1=show_friends($user_id);
+$arr1=show_friends($user_id);//friends array holds user_id name
 $arr1=unique_arr($arr1);
+
+ $all_status_arr=show_all_status();
+ //var_dump($all_status_arr);
+ $friend_status=[];
+ for($i=0;$i<count($arr1);$i++)
+ {
+    for($j=0;$j<count($all_status_arr);$j++)
+    {
+        if ($arr1[$i][0] == $all_status_arr[$j][1]) {
+            $friend_status[] = $all_status_arr[$j];
+        }
+    }
+ }
+ usort($friend_status, function($a, $b) {   return $a[0] <=> $b[0]; });
+//var_dump($friend_status);
+
+
 
 ?>
 
@@ -224,14 +241,18 @@ $arr1=unique_arr($arr1);
             </form>
 
             <?php
-            if (!empty($arr) && count($arr) > 0) {
-                $n = count($arr);
+           
+                $n = count($friend_status);
                 for ($i = $n - 1; $i >= 0; $i--) {
-                    if (isset($arr[$i][1], $arr[$i][2])) {
+
                         echo '<div class="post">';
+                        $user_id=$friend_status[$i][1];
+                        $first=first_name_($user_id);
+                        $last=last_name_($user_id);
+                        $name=$first ." ".$last;
                         echo "<h2>$name</h2>";
-                        echo "<p>" . $arr[$i][1] . "</p>";
-                        echo '<div class="timestamp">Posted on ' . $arr[$i][2] . '</div>';
+                        echo "<p>" . $friend_status[$i][2] . "</p>";
+                        echo '<div class="timestamp">Posted on ' . $friend_status[$i][3] . '</div>';
                         echo '
                             <form action="" method="POST" style="display: inline;">
                                 <button name="edit">Edit</button>
@@ -241,8 +262,8 @@ $arr1=unique_arr($arr1);
                             </form>';
                         echo '</div>';
                     }
-                }
-            }
+            
+            
             ?>
         </div>
     </div>
