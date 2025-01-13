@@ -8,24 +8,55 @@ $arr2= already_sent_friend_request($user_id);
 
 
 
+$new_arr=[];//people you may know
+if ($arr2 !== NULL) 
+{
+    $arr2=array_unique($arr2);
+    for ($i = 0; $i < count($arr); $i++)//all users - already sent friend req
+     {
+        if (!in_array($arr[$i][0], $arr2)) 
+        {
+            $new_arr[] = $arr[$i];
+        }
+    }
+    
+}
+else
+{
+    $new_arr=$arr;
+}
+
+
+$arr3=get_friend_request($user_id);
+if($arr3!==NULL)
+{
+    $arr3=unique_arr($arr3);
+
+}
+
+
+
 
 
 if(isset($_POST['friend_request']))
 {
     $user_id_of_friend=$_POST['friend_user_id'];//jake friend request pathabo
     friend_request($user_id,$user_id_of_friend);
+    header("Location: " . $_SERVER['PHP_SELF']);
 
 }
 if(isset($_POST['accept_friend_request']))
 {
     $user_id_of_friend=$_POST['friend_user_id'];
     update_accepted($user_id,$user_id_of_friend);
+    header("Location: " . $_SERVER['PHP_SELF']);
 
 }
 if(isset($_POST['reject_friend_request']))
 {
     $user_id_of_friend=$_POST['friend_user_id'];
     update_rejected($user_id,$user_id_of_friend);
+    header("Location: " . $_SERVER['PHP_SELF']);
 
 }
 
@@ -100,21 +131,21 @@ if(isset($_POST['reject_friend_request']))
     <h1>People You May Know</h1>
     <ul>
     <?php
-        if(!empty($arr))
+        if(!empty($new_arr) )
         {
-            for($i=0;$i<count($arr);$i++)
+            for($i=0;$i<count($new_arr);$i++)
             {
-                if(!in_array($arr[$i][0], $arr2))
-                {
+                if (isset($new_arr[$i][0]))
+                { 
                     echo '<li>';
-                    echo '<div class="friend-info">' . $arr[$i][1] . ' ' . $arr[$i][2] . '</div>';
+                    echo '<div class="friend-info">' . $new_arr[$i][1] . ' ' . $new_arr[$i][2] . '</div>';
                     echo '<form action="" method="POST" style="display:inline;">
-                            <input type="hidden" name="friend_user_id" value="' . $arr[$i][0] . '">
+                            <input type="hidden" name="friend_user_id" value="' . $new_arr[$i][0] . '">
                             <button type="submit" name="friend_request" class="friend-request-btn">Send Friend Request</button>
                         </form>';
                     echo '</li>';
+                
                 }
-               
             }
         }
     ?>
@@ -122,7 +153,6 @@ if(isset($_POST['reject_friend_request']))
     </ul>
     <h1>friend requests</h1>
     <?php
-    $arr3=get_friend_request($user_id);
     //$arr3=array_unique($arr3);
     if(!empty($arr3))
     {
