@@ -111,6 +111,30 @@ function get_first_name($email)
 
 }
 
+function first_name_($user_id)
+{
+    $conn=getConnection();
+    if(!$conn)
+    {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+    
+
+    $sql = "SELECT first_name FROM user_info WHERE user_id = '$user_id'";
+
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        return $row['first_name'];
+    } else {
+        return null;
+    }
+
+    $conn->close();
+
+}
+
 function get_last_name($email)
 {
     $conn=getConnection();
@@ -121,6 +145,28 @@ function get_last_name($email)
     
 
     $sql = "SELECT last_name FROM user_info WHERE email = '$email'";
+
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        return $row['last_name'];
+    } else {
+        return null;
+    }
+
+    $conn->close();
+}
+function last_name_($user_id)
+{
+    $conn=getConnection();
+    if(!$conn)
+    {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+    
+
+    $sql = "SELECT last_name FROM user_info WHERE user_id = '$user_id'";
 
     $result = $conn->query($sql);
 
@@ -203,6 +249,28 @@ function show_status($user_id)
 
 
 }
+
+
+function show_all_status()
+{
+    $conn=getConnection();
+    if(!$conn)
+    {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+    $sql = "SELECT id, user_id, status,time FROM statuses";
+    $result = $conn->query($sql);
+    $arr=[];
+    while ($row = $result->fetch_assoc()) 
+    {
+        $arr[]= array($row['id'],$row['user_id'], $row['status'],$row['time']);
+    }
+    if(count($arr)>0)
+    {
+        return $arr;
+    }
+}
+
 
 function delete_status($post_id)//incomplete
 {
@@ -316,7 +384,7 @@ function get_friend_request($user_id)
     }
 
  }
- 
+
  function unique_arr($arr)
   {
     $unique_arr = [];
@@ -409,6 +477,10 @@ function get_friend_request($user_id)
 
 
  }
+
+
+
+
 
  function cur_password($user_id)
  {
