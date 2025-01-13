@@ -21,6 +21,8 @@ if(isset($_POST['delete']))
 {
     
 }
+$arr1=show_friends($user_id);
+$arr1=unique_arr($arr1);
 
 ?>
 
@@ -139,6 +141,32 @@ if(isset($_POST['delete']))
             color: #90949c;
             margin-top: 5px;
         }
+        .profile-icon {
+        width: 100px;
+        height: 100px; 
+        background-color: #f0f0f0; 
+        display: flex; 
+        justify-content: center;
+        align-items: center; 
+        border-radius: 50%; 
+        text-align: center; 
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease; 
+    }
+
+    .profile-icon:hover {
+        background-color: #d9d9d9; 
+    }
+
+    .profile-icon h4 {
+        margin: 0; 
+        font-size: 18px; 
+        color: #333; 
+    }
+
+    a {
+        text-decoration: none;
+    }
     </style>
 </head>
 <body>
@@ -147,17 +175,45 @@ if(isset($_POST['delete']))
         <div class="search-box">
             <input type="text" placeholder="Search for People">
         </div>
-        <div class="profile-icon"></div>
+        <a href="profile.php">
+    <div class="profile-icon">
+        <h4>
+            <?php
+            $s=substr($first,0,1);
+            $ss=substr($last,0,1);
+            echo"$s $ss";
+            ?>
+        </h4>
+    </div>
+    </a>
     </div>
     
     <div class="container">
         <div class="left-sidebar">
-            <h2>Friends</h2>
+        <h2>Friends</h2>
             <ul>
-                <li><a href="#">Friend 1</a></li>
-                <li><a href="#">Friend 2</a></li>
-                <li><a href="#">Friend 3</a></li>
-                <li><a href="#">Friend 4</a></li>
+            <?php
+                if(!empty($arr1))
+                {
+                    
+                    for($i=0;$i<count($arr1);$i++)
+                    {
+                        if($user_id!=$arr1[$i][0])
+                        {
+                            echo '<li>';
+                            echo '<div class="friend-info">' . $arr1[$i][1] . ' ' . $arr1[$i][2] . '</div>';
+                            echo '<form action="" method="POST" style="display:inline;">
+                                    <input type="hidden" name="friend_user_id" value="' . $arr1[$i][0] . '">
+                                    <button type="submit" name="friend_request" class="friend-request-btn">View Profile</button>
+                                </form>';
+                            echo '</li>';
+                        }
+                            
+                        }
+                    
+                    
+                }
+                ?>
             </ul>
         </div>
 
