@@ -24,15 +24,15 @@ if(isset($_POST['post']))
 }
 if(isset($_POST['delete']))
 {
-    $post_id=$_POST['post_id'];
-     delete_status($post_id);
+    $id=$_POST['id'];
+     delete_status($id);
      header("Location: " . $_SERVER['PHP_SELF']);
-    exit();
 
 }
 
 $arr1=show_friends($user_id);
 $arr1=unique_arr($arr1);
+//var_dump($arr);
 
 
 ?>
@@ -234,7 +234,7 @@ $arr1=unique_arr($arr1);
 
     <div class="profile-header">
         <div class="cover-photo"></div>
-        <img src="https://via.placeholder.com/120" alt="Profile Picture" class="profile-picture">
+        <img src=" alt="Profile Picture" class="profile-picture">
         <h1><?php echo "$name" ?></h1>
     </div>
         
@@ -297,10 +297,11 @@ $arr1=unique_arr($arr1);
                         echo '<div class="timestamp">Posted on ' . $arr[$i][2] . '</div>';
                         echo '
                             <form action="" method="POST" style="display: inline;">
+                                 <input type="hidden" name="id" value="' . $arr[$i][0] . '">
                                 <button name="edit">Edit</button>
                             </form>
                             <form action="" method="POST" style="display: inline;">
-                                
+                            <input type="hidden" name="id" value="' . $arr[$i][0] . '">
                                 <button name="delete">Delete</button>
                             </form>';
                         echo '</div>';
