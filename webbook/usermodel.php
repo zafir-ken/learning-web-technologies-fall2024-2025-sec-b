@@ -272,14 +272,14 @@ function show_all_status()
 }
 
 
-function delete_status($post_id)//incomplete
+function delete_status($id)
 {
     $conn=getConnection();
     if(!$conn)
     {
         die("Connection failed: " . mysqli_connect_error());
     }
-    $sql = "DELETE FROM statuses WHERE id = $post_id";
+    $sql = "DELETE FROM statuses WHERE id = $id";
     if (mysqli_query($conn, $sql)) {
         echo "Post deleted successfully.";
     } else {
