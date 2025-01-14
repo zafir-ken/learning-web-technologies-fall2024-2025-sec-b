@@ -31,8 +31,8 @@ if(isset($_POST['delete']))
 }
 
 $arr1=show_friends($user_id);
-$arr1=unique_arr($arr1);
-//var_dump($arr);
+if($arr1!==NULL)$arr1=unique_arr($arr1);
+var_dump($arr1);
 
 
 ?>
