@@ -27,6 +27,7 @@ if(isset($_POST['delete']))
 $arr1=show_friends($user_id);//friends array holds user_id name
 if($arr1!==NULL)$arr1=unique_arr($arr1);
 
+$arr1[] = [$user_id, $first, $last];
  $all_status_arr=show_all_status();
  //var_dump($all_status_arr);
  $friend_status=[];
@@ -43,7 +44,7 @@ if($arr1!==NULL)$arr1=unique_arr($arr1);
     usort($friend_status, function($a, $b) {   return $a[0] <=> $b[0]; });
  
  
-var_dump($friend_status);
+var_dump($arr1);
 
 
 
