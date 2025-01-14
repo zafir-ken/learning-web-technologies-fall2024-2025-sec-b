@@ -25,22 +25,25 @@ if(isset($_POST['delete']))
 
 }
 $arr1=show_friends($user_id);//friends array holds user_id name
-$arr1=unique_arr($arr1);
+if($arr1!==NULL)$arr1=unique_arr($arr1);
 
  $all_status_arr=show_all_status();
  //var_dump($all_status_arr);
  $friend_status=[];
- for($i=0;$i<count($arr1);$i++)
- {
-    for($j=0;$j<count($all_status_arr);$j++)
+
+    for($i=0;$i<count($arr1);$i++)
     {
-        if ($arr1[$i][0] == $all_status_arr[$j][1]) {
-            $friend_status[] = $all_status_arr[$j];
+        for($j=0;$j<count($all_status_arr);$j++)
+        {
+            if ($arr1[$i][0] == $all_status_arr[$j][1]) {
+                $friend_status[] = $all_status_arr[$j];
+            }
         }
     }
- }
- usort($friend_status, function($a, $b) {   return $a[0] <=> $b[0]; });
-//var_dump($friend_status);
+    usort($friend_status, function($a, $b) {   return $a[0] <=> $b[0]; });
+ 
+ 
+var_dump($friend_status);
 
 
 
