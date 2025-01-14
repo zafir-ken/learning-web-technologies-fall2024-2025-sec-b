@@ -451,17 +451,17 @@ function get_friend_request($user_id)
     {
         die("Connection failed: " . mysqli_connect_error());
     }
-    $sql = "SELECT 
-            f.user_id, 
-            ui.first_name, 
-            ui.last_name 
-        FROM 
-            friends f
-        JOIN 
-            user_info ui ON f.user_id = ui.user_id
-        WHERE 
-            (f.user_id = $user_id OR f.friend_user_id = $user_id) 
-            AND f.accepted = 1";
+    $sql = "SELECT ui.user_id, ui.first_name, ui.last_name
+    FROM (
+    SELECT friend_user_id AS user_id
+    FROM friends
+    WHERE user_id = $user_id AND accepted = 1
+    UNION
+    SELECT user_id
+    FROM friends
+    WHERE friend_user_id = $user_id AND accepted = 1
+    ) AS friends_list
+    JOIN user_info ui ON friends_list.user_id = ui.user_id;";
     
     $result = $conn->query($sql);
     $arr=[];
