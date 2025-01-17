@@ -203,7 +203,7 @@ function get_user_id($email)
     $conn->close();
 }
 
-function post_status($user_id,$status)
+function post_status($user_id,$status,$photo)
  {
     
     $conn=getConnection();
@@ -212,34 +212,34 @@ function post_status($user_id,$status)
         die("Connection failed: " . mysqli_connect_error());
     }
     
-         $sql = "INSERT INTO statuses (user_id, status, time) 
-                VALUES ('$user_id', '$status', NOW())";
+    $sql = "INSERT INTO statuses (user_id, status, time, photo_url) 
+        VALUES ('$user_id', '$status', NOW(),'$photo')";
         
-        if (mysqli_query($conn, $sql)) {
+    if (mysqli_query($conn, $sql)) {
             return true;
-        } else {
+    } else {
             return false;
-        }
+    }
     
 
-        mysqli_close($conn);
+    mysqli_close($conn);
    
        
 }
 
-function show_status($user_id)
+function show_status($user_id) 
 {
     $conn=getConnection();
     if(!$conn)
     {
         die("Connection failed: " . mysqli_connect_error());
     }
-    $sql = "SELECT id, status,time FROM statuses WHERE user_id = $user_id";
+    $sql = "SELECT id, status,time,photo_url FROM statuses WHERE user_id = $user_id";
     $result = $conn->query($sql);
     $arr=[];
     while ($row = $result->fetch_assoc()) 
     {
-        $arr[]= array($row['id'], $row['status'],$row['time']);
+        $arr[]= array($row['id'], $row['status'],$row['time'],$row['photo_url']);
     }
     if(count($arr)>0)
     {
@@ -258,12 +258,12 @@ function show_all_status()
     {
         die("Connection failed: " . mysqli_connect_error());
     }
-    $sql = "SELECT id, user_id, status,time FROM statuses";
+    $sql = "SELECT id, user_id, status,time,photo_url FROM statuses";
     $result = $conn->query($sql);
     $arr=[];
     while ($row = $result->fetch_assoc()) 
     {
-        $arr[]= array($row['id'],$row['user_id'], $row['status'],$row['time']);
+        $arr[]= array($row['id'],$row['user_id'], $row['status'],$row['time'],$row['photo_url']);
     }
     if(count($arr)>0)
     {
@@ -643,5 +643,79 @@ function get_friend_request($user_id)
      mysqli_close($conn);
  }
 
+
+ function get_user_id_by_post_id($post_id)
+ {
+    $conn=getConnection();
+     if(!$conn)
+     {
+         die("Connection failed: " . mysqli_connect_error());
+     }
+     $sql="SELECT user_id from statuses where id=$post_id";
+     if ($result) {
+        $row = mysqli_fetch_assoc($result);
+        mysqli_close($conn);
+        return $row['user_id']; 
+    } else {
+        mysqli_close($conn);
+        return null; 
+    }
+ }
+ function get_status($post_id)
+ {
+    $conn=getConnection();
+     if(!$conn)
+     {
+         die("Connection failed: " . mysqli_connect_error());
+     }
+     $sql="SELECT status from statuses where id=$post_id";
+     $result = mysqli_query($conn, $sql);
+     if ($result) {
+         $row = mysqli_fetch_assoc($result);
+         mysqli_close($conn);
+         return $row['status'];
+     } else {
+         mysqli_close($conn);
+         return null; 
+     }
+ }
+ function get_photo($post_id)
+ {
+    $conn=getConnection();
+     if(!$conn)
+     {
+         die("Connection failed: " . mysqli_connect_error());
+     }
+     $sql="SELECT photo_url from statuses where id=$post_id";
+     $result = mysqli_query($conn, $sql);
+    if ($result) {
+        $row = mysqli_fetch_assoc($result);
+        mysqli_close($conn);
+        return $row['photo_url'];
+    } else {
+        mysqli_close($conn);
+        return null; 
+    }
+}
+
+function get_photo_by_user_id($user_id)
+ {
+    $conn=getConnection();
+     if(!$conn)
+     {
+         die("Connection failed: " . mysqli_connect_error());
+     }
+     $sql="SELECT photo_url from statuses where user_id=$user_id AND photo_url IS NOT NULL";
+     $result = mysqli_query($conn, $sql);
+     $arr=[];
+     while ($row = $result->fetch_assoc()) 
+     {
+         $arr[]= array($row['photo_url']);
+     }
+     if(count($arr)>0)
+     {
+         return $arr;
+     }
+}
 
 ?>
