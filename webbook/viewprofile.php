@@ -219,7 +219,6 @@ var_dump($mutual_arr);
 
     <div class="nav-bar">
         <a href="about.php">About</a>
-        <a href="#photos">Photos</a>
         <a href="profile.php">My Profile</a>
         <a href="timeline.php">Timeline</a>
     </div>
@@ -278,7 +277,14 @@ var_dump($mutual_arr);
                     if (isset($arr[$i][1], $arr[$i][2])) {
                         echo '<div class="post">';
                         echo "<h2>$name</h2>";
-                        echo "<p>" . $arr[$i][1] . "</p>";
+                        if($arr[$i][3]!=NULL)
+                        {
+                            echo '<img src="uploads/'. $arr[$i][3] . '" width="350" height="200">';
+                        }
+                        if($arr[$i][1]!=NULL)
+                        {
+                             echo "<p>" . $arr[$i][1] . "</p>";
+                        }
                         echo '<div class="timestamp">Posted on ' . $arr[$i][2] . '</div>';
 
                         echo '</div>';
