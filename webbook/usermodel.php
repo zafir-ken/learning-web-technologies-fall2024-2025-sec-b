@@ -368,7 +368,8 @@ function get_friend_request($user_id)
         JOIN 
             user_info ui ON f.user_id = ui.user_id
         WHERE 
-            f.friend_user_id = $user_id ";
+            f.friend_user_id = $user_id 
+            AND request=1";
 
 
 
@@ -565,6 +566,81 @@ function get_friend_request($user_id)
         mysqli_close($conn);
         return false;
     }
+ }
+ function post_comment($user_id, $post_id, $comment_text)
+ {
+    $conn=getConnection();
+    if(!$conn)
+    {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+    $sql = "INSERT INTO comments (post_id, user_id, comment_text , time) 
+    VALUES ('$post_id', '$user_id', '$comment_text', NOW())";
+
+    if (mysqli_query($conn, $sql)) {
+    return true;
+    } else {
+    return false;
+    }
+
+
+    mysqli_close($conn);
+
+
+ }
+
+ function get_comment($post_id)
+ {
+    $conn=getConnection();
+    if(!$conn)
+    {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+
+    $sql = "SELECT 
+    c.id, 
+    c.user_id, 
+    u.first_name, 
+    u.last_name, 
+    c.time,
+    c.comment_text
+    FROM 
+        comments c
+    JOIN 
+        user_info u ON c.user_id = u.user_id
+    WHERE 
+        c.post_id = $post_id";
+
+
+    $result = $conn->query($sql);
+    $arr=[];
+    while ($row = $result->fetch_assoc()) 
+    {
+        $arr[]= array($row['id'], $row['user_id'],$row['first_name'],$row['last_name'],$row['time'],$row['comment_text']);
+    }
+    if(count($arr)>0)
+    {
+        return $arr;
+    }
+
+
+ }
+
+ function delete_comment($id)
+ {
+     $conn=getConnection();
+     if(!$conn)
+     {
+         die("Connection failed: " . mysqli_connect_error());
+     }
+     $sql = "DELETE FROM comments WHERE id = $id";
+     if (mysqli_query($conn, $sql)) {
+         echo "deleted successfully.";
+     } else {
+         echo "Error deleting post: " . mysqli_error($conn);
+     }
+ 
+     mysqli_close($conn);
  }
 
 
