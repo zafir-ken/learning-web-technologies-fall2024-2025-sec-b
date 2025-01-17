@@ -10,10 +10,14 @@ $arr = show_status($user_id);
 
 if (isset($_POST['post'])) {
 
+
     $status = $_POST['status'];
-    post_status($user_id, $status);
+    $photo = $_POST['photo'];
+    
+    post_status($user_id, $status, $photo);
     header("Location: " . $_SERVER['PHP_SELF']);
-    exit();
+     exit();
+    
 
 }
 if (isset($_POST['delete'])) {
@@ -23,7 +27,10 @@ if (isset($_POST['delete'])) {
 }
 $arr1 = show_friends($user_id);//friends array holds user_id name
 if ($arr1 !== NULL)
+{
     $arr1 = unique_arr($arr1);
+}
+    
 
 $arr1[] = [$user_id, $first, $last];
 $all_status_arr = show_all_status();
@@ -54,6 +61,19 @@ if (isset($_POST['comment'])) {
 
     post_comment($user_id, $post_id, $comment_text);
     header("Location: " . $_SERVER['PHP_SELF']);
+
+}
+if (isset($_POST['share'])) {
+    $post_id = $_POST['post_id'];
+    $kar_post=get_user_id_by_post_id($post_id);
+    $status_=get_status($post_id);
+
+    $photo_=get_photo($post_id);
+    $user_id = get_user_id($email);
+    
+    post_status($user_id, $status_, $photo_);
+    header("Location: " . $_SERVER['PHP_SELF']);
+     exit();
 
 }
 
@@ -286,6 +306,7 @@ if (isset($_POST['delete_comment'])) {
         <div class="main-content">
             <form action="" method="POST">
                 <textarea rows="3" name="status" placeholder="What's on your mind?"></textarea>
+                <input type="file" name="photo" accept="image/*">
                 <button name="post" class="post-button">Post</button>
             </form>
 
@@ -300,7 +321,14 @@ if (isset($_POST['delete_comment'])) {
                 $last = last_name_($user_id_kar);
                 $name = $first . " " . $last;
                 echo "<h2>$name</h2>";
-                echo "<p>" . $friend_status[$i][2] . "</p>";
+                if($friend_status[$i][4]!=NULL)
+                 {
+                    echo '<img src="uploads/'. $friend_status[$i][4] . '" width="350" height="200">';
+                 }
+                if($friend_status[$i][2]!=NULL)
+                 {
+                    echo "<p>" . $friend_status[$i][2] . "</p>";
+                 }
                 echo '<div class="timestamp">Posted on ' . $friend_status[$i][3] . '</div>';
                 if ($user_id_kar == $user_id) {
                     echo '
@@ -347,7 +375,9 @@ if (isset($_POST['delete_comment'])) {
                        <textarea name="comment_text" placeholder="Write a comment..."></textarea>
                        <input type="hidden" name="post_id" value="' . $friend_status[$i][0] . '">
                        <button type="submit" name="comment">Comment</button>
+                       <button type="share" name="share">Share</button>
                      </form>';
+               
 
                 echo '</div>';
                 echo '<br><br>';
