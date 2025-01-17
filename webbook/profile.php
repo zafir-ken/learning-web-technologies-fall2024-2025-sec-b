@@ -13,11 +13,12 @@ if (isset($_POST['post'])) {
 
 
     $status = $_POST['status'];
-    if (!empty($status)) {
-        post_status($user_id, $status);
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit();
-    }
+    $photo = $_POST['photo'];
+    
+    post_status($user_id, $status, $photo);
+    header("Location: " . $_SERVER['PHP_SELF']);
+     exit();
+    
 
 }
 if (isset($_POST['delete'])) {
@@ -37,6 +38,8 @@ if (isset($_POST['view_profile_btn'])) {
     $_SESSION['friend_user_id'] = $friend_user_id;
     header('location: viewprofile.php');
 }
+
+
 
 
 ?>
@@ -253,7 +256,7 @@ if (isset($_POST['view_profile_btn'])) {
         <a href="timeline.php">Timeline</a>
         <a href="about.php">About</a>
         <a href="friends.php">Friends</a>
-        <a href="#photos">Photos</a>
+        <a href="photos.php">Photos</a>
         <a href="settings.php">Settings</a>
         <a href="logout.php" class="logout-button">Logout</a>
     </div>
@@ -290,6 +293,7 @@ if (isset($_POST['view_profile_btn'])) {
             <div class="status">
                 <form action="" method="POST">
                     <textarea rows="3" name="status" placeholder="What's on your mind?"></textarea>
+                    <input type="file" name="photo" accept="image/*">
                     <button name="post">Post</button>
                 </form>
             </div>
@@ -301,7 +305,15 @@ if (isset($_POST['view_profile_btn'])) {
                     if (isset($arr[$i][1], $arr[$i][2])) {
                         echo '<div class="post">';
                         echo "<h2>$name</h2>";
-                        echo "<p>" . $arr[$i][1] . "</p>";
+                        if($arr[$i][3]!=NULL)
+                        {
+                            echo '<img src="uploads/'. $arr[$i][3] . '" width="350" height="200">';
+                        }
+                        if($arr[$i][1]!=NULL)
+                        {
+                             echo "<p>" . $arr[$i][1] . "</p>";
+                        }
+                       
                         echo '<div class="timestamp">Posted on ' . $arr[$i][2] . '</div>';
                         echo '
                             <form action="" method="POST" style="display: inline;">
