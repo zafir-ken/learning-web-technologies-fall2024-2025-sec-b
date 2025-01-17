@@ -2,37 +2,41 @@
 session_start();
 require_once('usermodel.php');
 $email = $_COOKIE['email'];
-$first=get_first_name($email);
-$last=get_last_name($email);
-$name=$first ." ".$last;
-$user_id=get_user_id($email);
+$first = get_first_name($email);
+$last = get_last_name($email);
+$name = $first . " " . $last;
+$user_id = get_user_id($email);
 
-$arr=show_status($user_id);
+$arr = show_status($user_id);
 
-if(isset($_POST['post']))
-{
-    
-    
-    $status=$_POST['status'];
-    if(!empty($status))
-    {
-    post_status($user_id,$status);
-    header("Location: " . $_SERVER['PHP_SELF']);
-    exit();
+if (isset($_POST['post'])) {
+
+
+    $status = $_POST['status'];
+    if (!empty($status)) {
+        post_status($user_id, $status);
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit();
     }
 
 }
-if(isset($_POST['delete']))
-{
-    $id=$_POST['id'];
-     delete_status($id);
-     header("Location: " . $_SERVER['PHP_SELF']);
+if (isset($_POST['delete'])) {
+    $id = $_POST['id'];
+    delete_status($id);
+    header("Location: " . $_SERVER['PHP_SELF']);
 
 }
 
-$arr1=show_friends($user_id);
-if($arr1!==NULL)$arr1=unique_arr($arr1);
+$arr1 = show_friends($user_id);
+if ($arr1 !== NULL)
+    $arr1 = unique_arr($arr1);
 var_dump($arr1);
+
+if (isset($_POST['view_profile_btn'])) {
+    $friend_user_id = $_POST['friend_user_id'];
+    $_SESSION['friend_user_id'] = $friend_user_id;
+    header('location: viewprofile.php');
+}
 
 
 ?>
@@ -40,10 +44,11 @@ var_dump($arr1);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <style>
         * {
             margin: 0;
@@ -214,19 +219,25 @@ var_dump($arr1);
             color: #90949c;
             margin-top: 5px;
         }
+
         .logout-button {
             padding: 15px 20px;
             text-decoration: none;
             color: #1877f2;
             font-weight: bold;
-         }
+        }
 
         .logout-button:hover {
             background-color: #f0f2f5;
         }
 
+        .friends-heading {
+            color: blue;
+            font-weight: bold;
+        }
     </style>
 </head>
+
 <body>
     <div class="search-bar">
         <input type="text" placeholder="Search for people...">
@@ -234,10 +245,10 @@ var_dump($arr1);
 
     <div class="profile-header">
         <div class="cover-photo"></div>
-        <img src=" alt="Profile Picture" class="profile-picture">
+        <img src=" alt=" Profile Picture" class="profile-picture">
         <h1><?php echo "$name" ?></h1>
     </div>
-        
+
     <div class="nav-bar">
         <a href="timeline.php">Timeline</a>
         <a href="about.php">About</a>
@@ -249,47 +260,44 @@ var_dump($arr1);
 
     <div class="container">
         <div class="left-sidebar">
-            <h2>Friends</h2>
+            <h2 class="friends-heading">Friends</h2>
             <ul>
-            <?php
-                if(!empty($arr1))
-                {
-                    
-                    for($i=0;$i<count($arr1);$i++)
-                    {
-                        if($user_id!=$arr1[$i][0])
-                        {
+                <?php
+                if (!empty($arr1)) {
+
+                    for ($i = 0; $i < count($arr1); $i++) {
+                        if ($user_id != $arr1[$i][0]) {
                             echo '<li>';
                             echo '<div class="friend-info">' . $arr1[$i][1] . ' ' . $arr1[$i][2] . '</div>';
                             echo '<form action="" method="POST" style="display:inline;">
                                     <input type="hidden" name="friend_user_id" value="' . $arr1[$i][0] . '">
-                                    <button type="submit" name="friend_request" class="friend-request-btn">View Profile</button>
+                                    <button type="submit" name="view_profile_btn" class="friend-request-btn">View Profile</button>
                                 </form>';
                             echo '</li>';
                         }
-                            
-                        }
-                    
-                    
+
+                    }
+
+
                 }
                 ?>
             </ul>
+
         </div>
+
 
         <div class="main-content">
             <div class="status">
                 <form action="" method="POST">
-                <textarea rows="3" name="status" placeholder="What's on your mind?"></textarea>
-                <button name="post">Post</button>
+                    <textarea rows="3" name="status" placeholder="What's on your mind?"></textarea>
+                    <button name="post">Post</button>
                 </form>
             </div>
 
             <?php
-            if(!empty($arr) && count($arr)>0)
-            {
-                $n=count($arr);
-                for($i=$n-1;$i>=0;$i--)
-                {
+            if (!empty($arr) && count($arr) > 0) {
+                $n = count($arr);
+                for ($i = $n - 1; $i >= 0; $i--) {
                     if (isset($arr[$i][1], $arr[$i][2])) {
                         echo '<div class="post">';
                         echo "<h2>$name</h2>";
@@ -305,7 +313,7 @@ var_dump($arr1);
                                 <button name="delete">Delete</button>
                             </form>';
                         echo '</div>';
-                        
+
                     }
                 }
             }
@@ -313,7 +321,8 @@ var_dump($arr1);
 
         </div>
     </div>
-            
+
 
 </body>
+
 </html>
