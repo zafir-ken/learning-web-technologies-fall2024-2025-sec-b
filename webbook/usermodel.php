@@ -718,4 +718,38 @@ function get_photo_by_user_id($user_id)
      }
 }
 
+function update_profile_picture($user_id,$profile_pic)
+{
+    $conn=getConnection();
+     if(!$conn)
+     {
+         die("Connection failed: " . mysqli_connect_error());
+     }
+     $sql="UPDATE user_info SET image = '$profile_pic' WHERE user_id = $user_id";
+     $result = mysqli_query($conn, $sql);
+     if($result)return true;
+     else return false;
+     mysqli_close($conn);
+}
+
+
+function show_profile_pic($user_id)
+{
+    $conn=getConnection();
+     if(!$conn)
+     {
+         die("Connection failed: " . mysqli_connect_error());
+     }
+     $sql="SELECT image from user_info where user_id=$user_id";
+     $result = mysqli_query($conn, $sql);
+     if (mysqli_num_rows($result) > 0) {
+        
+        $row = mysqli_fetch_assoc($result);
+        return $row['image'];
+    } else {
+        return null; 
+    }
+     
+}
+
 ?>
