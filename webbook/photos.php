@@ -5,8 +5,8 @@ require_once('usermodel.php');
 $email = $_COOKIE['email'];
 $user_id = get_user_id($email);
 $photos_arr=get_photo_by_user_id($user_id);
-//$photos_arr=array_unique($photos_arr);
-var_dump($photos_arr);
+$photos_arr=unique_arr($photos_arr);
+//var_dump($photos_arr);
 ?>
 
 
