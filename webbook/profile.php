@@ -21,6 +21,7 @@ if (isset($_POST['post'])) {
     
 
 }
+
 if (isset($_POST['delete'])) {
     $id = $_POST['id'];
     delete_status($id);
@@ -31,7 +32,7 @@ if (isset($_POST['delete'])) {
 $arr1 = show_friends($user_id);
 if ($arr1 !== NULL)
     $arr1 = unique_arr($arr1);
-var_dump($arr1);
+//var_dump($arr1);
 
 if (isset($_POST['view_profile_btn'])) {
     $friend_user_id = $_POST['friend_user_id'];
@@ -39,7 +40,14 @@ if (isset($_POST['view_profile_btn'])) {
     header('location: viewprofile.php');
 }
 
+if(isset($_POST['profile_photo_btn']))
+{
+    $profile_pic=$_POST['profile_photo'];
+    update_profile_picture($user_id,$profile_pic);
 
+}
+
+$profile_pic_url=show_profile_pic($user_id);
 
 
 ?>
@@ -51,6 +59,7 @@ if (isset($_POST['view_profile_btn'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
     <style>
         * {
@@ -58,6 +67,35 @@ if (isset($_POST['view_profile_btn'])) {
             padding: 0;
             box-sizing: border-box;
         }
+        body{
+            font-family:verdana;
+
+        }
+         #search{
+              width:400px;
+              padding:10px;
+              display:block;
+              border-radius:3px;
+              border: 1px solid silver;
+              margin: 0 auto;
+
+
+         }
+         div#back_result{
+            padding:10px;
+            width:400px;
+            margin:0 auto;
+            border: 1px solid silver;
+            display:none;
+         }
+
+         #pic{
+            vertical-align:middle;
+
+         }
+         #user{
+            margin: 3px;
+         }
 
         body {
             font-family: Arial, sans-serif;
@@ -242,13 +280,39 @@ if (isset($_POST['view_profile_btn'])) {
 </head>
 
 <body>
-    <div class="search-bar">
-        <input type="text" placeholder="Search for people...">
-    </div>
+    <form method ="post" action="#">
+           <input type="text" name="search" id="search" placeholder="SEARCH">
+    </form>
+    <div id="back_result"></div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+            $('#search').keyup(function(){
+
+                var name= $(this).val();
+
+                $.post('get_users.php', {name:name}, function(data){
+                      
+                    $('div#back_result').css({'display':'block'});
+                     $('div#back_result').html(data);
+
+                });
+
+            });
+
+        });
+    </script>
 
     <div class="profile-header">
         <div class="cover-photo"></div>
-        <img src=" alt=" Profile Picture" class="profile-picture">
+        
+        <img src="uploads\<?php echo $profile_pic_url; ?>" Profile Picture class="profile-picture">
+        <form action="" method="POST">
+            <input type="file" name="profile_photo" accept="image/*">
+            <button type="submit" name="profile_photo_btn">Upload</button>
+        </form>
         <h1><?php echo "$name" ?></h1>
     </div>
 
