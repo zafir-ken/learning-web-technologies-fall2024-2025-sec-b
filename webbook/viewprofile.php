@@ -25,7 +25,9 @@ if (isset($_POST['view_profile_btn'])) {
 $cur_logged_in_user_id = get_user_id($email);
 $arr2 = show_friends($cur_logged_in_user_id);
 if ($arr2 !== NULL)
+{
     $arr2 = unique_arr($arr2);
+}
 
 $mutual_arr = [];
 
@@ -37,9 +39,13 @@ for ($i = 0; $i < count($arr1); $i++) {
     }
 }
 if ($mutual_arr !== NULL)
-    $mutual_arr = unique_arr($mutual_arr);
+  {
 
-var_dump($mutual_arr);
+     $mutual_arr = unique_arr($mutual_arr);
+ } 
+//var_dump($mutual_arr);
+
+$profile_pic_url=show_profile_pic($user_id);
 
 
 ?>
@@ -213,7 +219,7 @@ var_dump($mutual_arr);
 <body>
     <div class="profile-header">
         <div class="cover-photo"></div>
-        <img src="" alt="Profile Picture" class="profile-picture">
+        <img src="uploads\<?php echo $profile_pic_url; ?>" Profile Picture class="profile-picture">
         <h1><?php echo "$name" ?></h1>
     </div>
 
