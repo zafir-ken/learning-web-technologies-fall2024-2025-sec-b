@@ -95,6 +95,7 @@ if (isset($_POST['delete_comment'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <title>WebBook</title>
     <style>
         * {
@@ -102,6 +103,36 @@ if (isset($_POST['delete_comment'])) {
             padding: 0;
             box-sizing: border-box;
         }
+        
+        body{
+            font-family:verdana;
+
+        }
+         #search{
+              width:400px;
+              padding:10px;
+              display:block;
+              border-radius:3px;
+              border: 1px solid silver;
+              margin: 0 auto;
+
+
+         }
+         div#back_result{
+            padding:10px;
+            width:400px;
+            margin:0 auto;
+            border: 1px solid silver;
+            display:none;
+         }
+
+         #pic{
+            vertical-align:middle;
+
+         }
+         #user{
+            margin: 3px;
+         }
 
         body {
             font-family: Arial, sans-serif;
@@ -259,6 +290,30 @@ if (isset($_POST['delete_comment'])) {
 </head>
 
 <body>
+     <form method ="post" action="#">
+           <input type="text" name="search" id="search" placeholder="SEARCH">
+    </form>
+    <div id="back_result"></div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+            $('#search').keyup(function(){
+
+                var name= $(this).val();
+
+                $.post('get_users.php', {name:name}, function(data){
+                      
+                    $('div#back_result').css({'display':'block'});
+                     $('div#back_result').html(data);
+
+                });
+
+            });
+
+        });
+    </script>
     <div class="header">
         <h1>WebBook</h1>
         <div class="search-box">
