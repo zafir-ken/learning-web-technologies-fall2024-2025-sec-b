@@ -1,45 +1,72 @@
+
 <?php
+
 session_start();
 require_once('usermodel.php');
 if (isset($_POST['login'])) {
   header("location: login.php");
 }
-if (isset($_POST['submit'])) {
-  $first_name = trim($_POST['first_name']);
-  $last_name = trim($_POST['last_name']);
-  $gender = trim($_POST['gender']);
-  $email = trim($_POST['email']);
-  $password = trim($_POST['password']);
-  $confirm_password = trim($_POST['confirm_password']);
 
-  if ($password !== $confirm_password) {
-    echo "Passwords do not match.";
-  } else {
-    $user_id = rand(1, 100000000);
-    while (!isunique($user_id)) {
-      $user_id = rand(1, 100000000);
+if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
+// Get the raw POST data
+  $input = file_get_contents('php://input'); //**** 
+
+    // Decode the JSON data
+  $data = json_decode($input, true);
+
+    // Check if the required fields are present
+  if (isset($data['first_name']) && isset($data['last_name']) && isset($data['gender']) && isset($data['email']) && isset($data['password']) && isset($data['confirm_password']) ) {
+        $first_name = htmlspecialchars($data['first_name']); // Sanitize input
+        $last_name = htmlspecialchars($data['last_name']); // Sanitize input
+        $gender = htmlspecialchars($data['gender']); // Sanitize input
+        $email = htmlspecialchars($data['email']); // Sanitize input
+        $password = htmlspecialchars($data['password']); // Sanitize input
+        $confirm_password = htmlspecialchars($data['confirm_password']); // Sanitize input
+
+        // Perform any additional processing (e.g., saving to a database)
+        // For demonstration purposes, we return a success message
+
+        $user_id = rand(1, 100000000);
+        while (!isunique($user_id)) {
+          $user_id = rand(1, 100000000);
+        }
+
+        if (!isunique_email($email)) {
+          //echo "This Email is already registered";
+          echo json_encode([
+            'status' => 'error',
+            'message' => 'This Email is already registered! Provide a new one.',
+          ]);
+          exit;
+        }
+        else {
+          $status = addUser($first_name, $last_name, $user_id, $gender, $email, $password);
+          if ($status) {
+            echo json_encode([
+              'status' => 'success',
+              'message' => "Registration Successful!",
+            ]);
+            exit;
+            } 
+            else {
+              echo json_encode([
+                'status' => 'error',
+                'message' => 'Some Error occured! Try agin..',
+              ]);
+              exit;
+            }
+        }
+    } 
+    else {
+        // If required fields are missing, return an error response
+      echo json_encode([
+          'status' => 'error',
+          'message' => 'Invalid input. Please provide all fields.',
+      ]);
+      exit;
     }
-
-    if (!isunique_email($email)) {
-      echo "This Email is already registered";
-    } else {
-      $status = addUser($first_name, $last_name, $user_id, $gender, $email, $password);
-      if ($status) {
-        header('location: login.php');
-      } else {
-        header('location: signup.php');
-      }
-    }
-
-
-  }
-
-
-
-}
-
+} 
 ?>
-
 
 
 <!DOCTYPE html>
@@ -47,104 +74,11 @@ if (isset($_POST['submit'])) {
 
 <head>
   <meta charset="UTF-8">
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WebBook Sign Up</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #996515;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-
-
-    .container {
-      text-align: center;
-      width: 100%;
-      max-width: 400px;
-    }
-
-    header {
-      background-color: #708090;
-      padding: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    header h1 {
-      color: white;
-      margin: 0;
-    }
-
-    .login-btn {
-      background-color: #d3a42e;
-      border: none;
-      color: white;
-      padding: 8px 16px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .login-btn:hover {
-      background-color: #bf901d;
-    }
-
-
-    .signup-box {
-      background-color: blue;
-      color: white;
-      border-radius: 10px;
-      padding: 20px;
-      margin-top: 20px;
-    }
-
-    .signup-box h2 {
-      margin-bottom: 20px;
-      font-size: 20px;
-    }
-
-
-    form {
-      display: flex;
-      flex-direction: column;
-    }
-
-    form input,
-    form select {
-      padding: 10px;
-      margin-bottom: 15px;
-      border-radius: 5px;
-      border: none;
-      font-size: 16px;
-    }
-
-    form select {
-      background-color: white;
-      color: black;
-    }
-
-    .signup-btn {
-      background: linear-gradient(to right, cyan, green);
-      border: none;
-      padding: 10px;
-      font-size: 16px;
-      color: white;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-
-    .signup-btn:hover {
-      background: linear-gradient(to right, green, cyan);
-    }
-
-    a {
-      text-decoration: none;
-    }
-  </style>
+  
+  <link rel="stylesheet" href="signup.css">
 </head>
 
 <body>
@@ -157,25 +91,34 @@ if (isset($_POST['submit'])) {
 
     </header>
     <div class="signup-box">
+      <h3 id="response"><h3>
       <h2>Sign up To WebBook</h2>
-      <form action="" method="POST">
-        <input type="text" name="first_name" placeholder="First Name" required>
-        <input type="text" name="last_name" placeholder="Last Name" required>
+      <form name="signupForm" id="signupForm" >
+
+        <input type="text" id="first_name" name="first_name" placeholder="First Name" required>
+
+        <input type="text" id="last_name" name="last_name" placeholder="Last Name" required>
 
         <label for="gender">Gender:</label>
-        <select name="gender" id="gender" required>
+        <select id="gender" name="gender" required>
           <option value="male">Male</option>
           <option value="female">Female</option>
           <option value="other">Other</option>
         </select>
-        <input type="email" name="email" placeholder="Email" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <input type="password" name="confirm_password" placeholder="Confirm Password" required>
 
+        <input type="email" id="email" name="email" placeholder="Email" required>
+
+        <input type="password" id="password" name="password" placeholder="Password" required>
+
+        <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm Password" required>
+
+      <!--  <input type="submit" name="submit" class="signup-btn" value="Sign Up"> -->
         <button type="submit" name="submit" class="signup-btn">Sign Up</button>
+
       </form>
     </div>
   </div>
+  <script src="form_validation.js"></script>
 </body>
 
 </html>
