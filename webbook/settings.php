@@ -4,18 +4,32 @@ require_once('usermodel.php');
 $email = $_COOKIE['email'];
 $user_id = get_user_id($email);
 $cur_pass = cur_password($user_id);
-if (isset($_POST['change_password'])) {
-    if ($cur_pass == $_POST['current_password']) {
-        if (($_POST['new_password'] == ($_POST['confirm_password']))) {
-            $new_password = ($_POST['confirm_password']);
-            change_password($user_id, $new_password);
-            echo "success";
-        } else {
-            echo "new password and confirm password does not match";
+if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) 
+{
+    // Get the raw POST data
+    $input = file_get_contents('php://input'); //**** 
+
+    // Decode the JSON data
+    $data = json_decode($input, true);
+        $current_password= htmlspecialchars($data['current_password']);
+        if($cur_pass!==$current_password)
+        {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'current password dosent match',
+              ]);
+              exit;
         }
-    } else {
-        echo "current password entered is Wrong";
-    }
+        else
+        {
+            $new_password= htmlspecialchars($data['new_password']);
+            change_password($user_id,$new_password);
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'password change successful',
+              ]);
+              exit;
+        }
 }
 if (isset($_POST['change_first_name'])) {
     $first_name = $_POST['first_name'];
@@ -137,26 +151,24 @@ if (isset($_POST['change_email'])) {
 
         <div class="section">
             <h2>Change Password</h2>
-            <form action="" method="POST">
+            <h5 id="response"></h5>
+            <form action="" method="POST" id="change_pass_form" onsubmit="return validate_change_pass(event)">
                 <div class="form-group">
                     <label for="current_password">Current Password</label>
-                    <input type="password" id="current_password" name="current_password"
-                        placeholder="Enter your current password" required>
+                    <input type="password" id="current_password" name="current_password" placeholder="Enter your current password" required>
                 </div>
 
                 <div class="form-group">
                     <label for="new_password">New Password</label>
-                    <input type="password" id="new_password" name="new_password" placeholder="Enter a new password"
-                        required>
+                    <input type="password" id="new_password" name="new_password" placeholder="Enter a new password" required>
                 </div>
 
                 <div class="form-group">
                     <label for="confirm_password">Confirm New Password</label>
-                    <input type="password" id="confirm_password" name="confirm_password"
-                        placeholder="Confirm your new password" required>
+                    <input type="password" id="confirm_password" name="confirm_password"  placeholder="Confirm your new password" required>
                 </div>
 
-                <button type="submit" name="change_password">Change Password</button>
+                <button type="submit" id="submit" name="change_password">Change Password</button>
             </form>
         </div>
 
@@ -186,6 +198,7 @@ if (isset($_POST['change_email'])) {
 
     </div>
     </div>
+    <script src="change_password_form.js"></script>
 </body>
 
 </html>
