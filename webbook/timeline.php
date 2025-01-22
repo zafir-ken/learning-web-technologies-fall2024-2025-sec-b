@@ -55,12 +55,29 @@ if (isset($_POST['view_profile_btn'])) {
     $_SESSION['friend_user_id'] = $friend_user_id;
     header('location: viewprofile.php');
 }
-if (isset($_POST['comment'])) {
-    $post_id = $_POST['post_id'];
-    $comment_text = $_POST['comment_text'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST')//for comment
+ {
 
+    // Get the raw POST data
+    $input = file_get_contents('php://input'); //**** 
+
+    // Decode the JSON data
+    $data = json_decode($input, true);
+    $comment_text= htmlspecialchars($data['comment_text']); // Sanitize input
+    $post_id = htmlspecialchars($data['post_id']); 
+    $now = date('Y-m-d H:i:s');
     post_comment($user_id, $post_id, $comment_text);
-    header("Location: " . $_SERVER['PHP_SELF']);
+    echo json_encode([
+        'status' => 'success',
+        'message' => 'Comment successful!',
+        'comment' => $comment_text,
+        'name' => $name,
+        'time' => $now,
+        
+        
+      ]);
+      exit;
+    //header("Location: " . $_SERVER['PHP_SELF']);
 
 }
 if (isset($_POST['share'])) {
@@ -407,6 +424,11 @@ if (isset($_POST['delete_comment'])) {
 
                     echo '<div class="post">';
                     $nn = count($comments);
+                ?>
+                <h6 id="nam" style="font-weight: bold;"></h6>
+                <p id="com"></p>
+                <h5 id="somoy"> </h5>
+                <?php
                     for ($j = $nn - 1; $j >= 0; $j--) {
 
                         
@@ -416,7 +438,7 @@ if (isset($_POST['delete_comment'])) {
                         $name = $first . " " . $last;
                         echo "<h6>$name</h6>";
                         echo "<p>" . $comments[$j][5] . "</p>";
-                        echo '<div class="timestamp">Posted on ' . $comments[$j][4] . '</div>';
+                        echo '<h5>' . $comments[$j][4] . '</h5>';
                         if ($user_id_kar == $user_id) {
                             echo '  <form action="" method="POST" style="display: inline;">
                                     <input type="hidden" name="comment_id" value="' . $comments[$j][0] . '">
@@ -426,11 +448,11 @@ if (isset($_POST['delete_comment'])) {
                     }
                 }
                 echo '</div>';
-                echo '<form action="" method="POST" style="margin-top:">
-                       <textarea name="comment_text" placeholder="Write a comment..."></textarea>
-                       <input type="hidden" name="post_id" value="' . $friend_status[$i][0] . '">
-                       <button type="submit" name="comment">Comment</button>
-                       <button type="share" name="share">Share</button>
+                echo '<form action="" method="POST" id="comment_form" style="margin-top:">
+                       <textarea name="comment_text" id="comment_text" placeholder="Write a comment..."></textarea>
+                       <input type="hidden" name="post_id" id="post_id" value="' . $friend_status[$i][0] . '">
+                       <button type="submit" id="submit" name="comment">Comment</button>
+                       <button type="share" id="share" name="share">Share</button>
                      </form>';
                
 
@@ -442,6 +464,7 @@ if (isset($_POST['delete_comment'])) {
             ?>
         </div>
     </div>
+    <script src="comment.js"></script>
 </body>
 
 </html>
